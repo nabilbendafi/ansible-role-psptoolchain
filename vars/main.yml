@@ -1,3 +1,9 @@
 ---
 psptoolchain_tmp_path: '/tmp/'
+
 psptoolchain_binutils_version: 2.22
+
+psptoolchain_gcc_version: '4.6.4'
+psptoolchain_gmp_version: '5.1.3'
+psptoolchain_mpc_version: '1.0.2'
+psptoolchain_mpfr_version: '3.1.2'

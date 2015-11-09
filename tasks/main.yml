@@ -1,2 +1,3 @@
 - include: dependencies.yml
 - include: binutils.yml
+- include: gcc.yml
