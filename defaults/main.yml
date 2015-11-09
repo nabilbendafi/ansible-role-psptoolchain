@@ -1,0 +1,3 @@
+# defaults file for psptoolchain
+install_dir: /usr/local/pspdev
+target: psp

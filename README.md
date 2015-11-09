@@ -1,13 +1,24 @@
 psptoolchain
 ============
 
-This role installs and configures the psptoolchain.
+This role installs and configures the open-source [psptoolchain](https://github.com/pspdev/psptoolchain) for PSP homebrew development.
 
 Installation
 ------------
 
 ```
-$ ansible-galaxy install nabilbendafi.ansible-role-psptoolchain
+$ ansible-galaxy install nabilbendafi.ansible-role-psptoolchain 
+```
+
+```
+# psptoolchain.yml
+- hosts: localhost
+  roles:
+    - psptoolchain
+```
+
+```
+$ ansible-playbook psptoolchain.yml
 ```
 
 Dependencies

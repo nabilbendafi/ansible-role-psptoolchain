@@ -1,0 +1,29 @@
+- name: Install dependencies
+  apt: name={{ item }} update_cache=yes
+  sudo: yes
+  with_items:
+    - g++
+    - build-essential
+    - autoconf
+    - automake
+    - automake1.9
+    - cmake
+    - doxygen
+    - bison
+    - flex
+    - libncurses5-dev
+    - libsdl1.2-dev
+    - libreadline-dev
+    - libusb-dev
+    - texinfo
+    - libgmp3-dev
+    - libmpfr-dev
+    - libelf-dev
+    - libmpc-dev
+    - libfreetype6-dev
+    - zlib1g-dev
+    - libtool
+    - subversion
+    - git
+    - tcl
+    - unzip
