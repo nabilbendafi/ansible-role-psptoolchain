@@ -1,0 +1,31 @@
+# tasks file for pspsdk
+- name: Download PSP SDK
+  git: repo=git://github.com/pspdev/pspsdk
+       dest=/tmp/pspsdk
+       accept_hostkey=yes
+
+- name: aclocal
+  shell: chdir=/tmp/pspsdk aclocal -I aclocal
+
+- name: autoheader
+  shell: chdir=/tmp/pspsdk autoheader
+
+- name: automake
+  shell: chdir=/tmp/pspsdk automake -a -c --foreign
+
+- name: autoconf
+  shell: chdir=/tmp/pspsdk autoconf
+
+- name: Configure PSP SDK
+  shell: chdir=/tmp/pspsdk CFLAGS="$CFLAGS -I/opt/local/include" CPPFLAGS="$CPPFLAGS -I/opt/local/include" LDFLAGS="$LDFLAGS -L/opt/local/lib" ./configure --with-pspdev="{{ install_dir }}"
+
+- name: Install PSP SDK headers (Stage 1)
+  shell: chdir=/tmp/pspsdk make -j {{ ansible_processor_vcpus }} clean && make -j {{ ansible_processor_vcpus }} install-data
+  sudo: yes
+  environment:
+    PATH: "{{ ansible_env.PATH }}:{{ install_dir }}/bin"
+
+- name: Clean PSP SDK
+  shell: chdir=/tmp/pspsdk make -j {{ ansible_processor_vcpus }} clean
+  environment:
+    PATH: "{{ ansible_env.PATH }}:{{ install_dir }}/bin"

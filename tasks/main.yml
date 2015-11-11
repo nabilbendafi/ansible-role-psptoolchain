@@ -1,3 +1,4 @@
 - include: dependencies.yml
 - include: binutils.yml
 - include: gcc-stage1.yml
+- include: pspsdk-stage1.yml
