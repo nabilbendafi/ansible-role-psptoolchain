@@ -39,7 +39,7 @@
 
 - name: Download mpfr-{{ psptoolchain_mpfr_version }}
   get_url:
-    url=http://www.mpfr.org/mpfr-{{ psptoolchain_mpfr_version }}/mpfr-{{ psptoolchain_mpfr_version }}.tar.bz2
+    url=http://ftp.gnu.org/gnu/mpfr/mpfr-{{ psptoolchain_mpfr_version }}.tar.bz2
     dest=/tmp
 
 - name: Extract mpfr-{{ psptoolchain_mpfr_version }}
