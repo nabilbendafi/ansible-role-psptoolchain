@@ -9,3 +9,5 @@ psptoolchain_mpc_version: '1.0.2'
 psptoolchain_mpfr_version: '3.1.2'
 
 psptoolchain_newlib_version: '1.20.0'
+
+psptoolchain_gdb_version: '7.3.1'
