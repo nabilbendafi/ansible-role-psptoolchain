@@ -3,3 +3,4 @@
 - include: gcc-stage1.yml
 - include: pspsdk-stage1.yml
 - include: newlib.yml
+- include: gcc-stage2.yml
