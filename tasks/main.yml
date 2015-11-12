@@ -5,3 +5,4 @@
 - include: newlib.yml
 - include: gcc-stage2.yml
 - include: gdb.yml
+- include: insight.yml
