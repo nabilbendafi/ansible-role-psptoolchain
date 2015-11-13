@@ -1,56 +1,56 @@
 - name: Download gdb-{{ psptoolchain_gdb_version }}
   get_url:
     url=ftp://ftp.gnu.org/pub/gnu/gdb/gdb-{{ psptoolchain_gdb_version }}.tar.bz2
-    dest=/tmp/
+    dest={{ psptoolchain_tmp_path }}/
 
 - name: Extract gdb-{{ psptoolchain_gdb_version }}
   unarchive:
-    src=/tmp/gdb-{{ psptoolchain_gdb_version }}.tar.bz2
-    dest=/tmp
+    src={{ psptoolchain_tmp_path }}/gdb-{{ psptoolchain_gdb_version }}.tar.bz2
+    dest={{ psptoolchain_tmp_path }}
     copy=no
 
 - name: Apply gdb-{{ psptoolchain_gdb_version }}-fix-stpcpy patch
   patch:
     src=gdb-{{ psptoolchain_gdb_version }}-fix-stpcpy.patch
-    basedir=/tmp/gdb-{{ psptoolchain_gdb_version }}
+    basedir={{ psptoolchain_tmp_path }}/gdb-{{ psptoolchain_gdb_version }}
     strip=1
 
 - name: Apply gdb-{{ psptoolchain_gdb_version }}-PSP patch
   patch:
     src=gdb-{{ psptoolchain_gdb_version }}-PSP.patch
-    basedir=/tmp/gdb-{{ psptoolchain_gdb_version }}
+    basedir={{ psptoolchain_tmp_path }}/gdb-{{ psptoolchain_gdb_version }}
     strip=1
 
 - name: Apply gdb-{{ psptoolchain_gdb_version }}-texinfofix patch
   patch:
     src=gdb-{{ psptoolchain_gdb_version }}-texinfofix.patch
-    basedir=/tmp/gdb-{{ psptoolchain_gdb_version }}
+    basedir={{ psptoolchain_tmp_path }}/gdb-{{ psptoolchain_gdb_version }}
     strip=1
 
 - name: Apply gdb-{{ psptoolchain_gdb_version }}-fix-sim-arange patch
   patch:
     src=gdb-{{ psptoolchain_gdb_version }}-fix-sim-arange.patch
-    basedir=/tmp/gdb-{{ psptoolchain_gdb_version }}
+    basedir={{ psptoolchain_tmp_path }}/gdb-{{ psptoolchain_gdb_version }}
     strip=1
 
 - name: Create build directory
-  file: path=/tmp/gdb-{{ psptoolchain_gdb_version }}/build-{{ target }} state=directory
+  file: path={{ psptoolchain_tmp_path }}/gdb-{{ psptoolchain_gdb_version }}/build-{{ target }} state=directory
 
 - name: Configure gdb-{{ psptoolchain_gdb_version }}
-  shell: chdir=/tmp/gdb-{{ psptoolchain_gdb_version }}/build-{{ target }} CFLAGS="$CFLAGS -I/opt/local/include" CPPFLAGS="$CPPFLAGS -I/opt/local/include" LDFLAGS="$LDFLAGS -L/opt/local/lib" ../configure --prefix="{{ install_dir }}" --target="{{ target }}" --disable-werror --disable-nls
+  shell: chdir={{ psptoolchain_tmp_path }}/gdb-{{ psptoolchain_gdb_version }}/build-{{ target }} CFLAGS="$CFLAGS -I/opt/local/include" CPPFLAGS="$CPPFLAGS -I/opt/local/include" LDFLAGS="$LDFLAGS -L/opt/local/lib" ../configure --prefix="{{ install_dir }}" --target="{{ target }}" --disable-werror --disable-nls
   environment:
     PATH: "{{ ansible_env.PATH }}:{{ install_dir }}/bin"
 
 - name: Compile gdb-{{ psptoolchain_gdb_version }}
-  shell: chdir=/tmp/gdb-{{ psptoolchain_gdb_version }}/build-{{ target }} make -j {{ ansible_processor_vcpus }} clean && make -j {{ ansible_processor_vcpus }}
+  shell: chdir={{ psptoolchain_tmp_path }}/gdb-{{ psptoolchain_gdb_version }}/build-{{ target }} make -j {{ ansible_processor_vcpus }} clean && make -j {{ ansible_processor_vcpus }}
   environment:
     PATH: "{{ ansible_env.PATH }}:{{ install_dir }}/bin"
 
 - name: Install gdb-{{ psptoolchain_gdb_version }}
   sudo: yes
-  shell: chdir=/tmp/gdb-{{ psptoolchain_gdb_version }}/build-{{ target }} make -j {{ ansible_processor_vcpus }} install
+  shell: chdir={{ psptoolchain_tmp_path }}/gdb-{{ psptoolchain_gdb_version }}/build-{{ target }} make -j {{ ansible_processor_vcpus }} install
   environment:
     PATH: "{{ ansible_env.PATH }}:{{ install_dir }}/bin"
 
 - name: Clean gdb-{{ psptoolchain_gdb_version }}
-  shell: chdir=/tmp/gdb-{{ psptoolchain_gdb_version }}/build-{{ target }} make -j {{ ansible_processor_vcpus }} clean
+  shell: chdir={{ psptoolchain_tmp_path }}/gdb-{{ psptoolchain_gdb_version }}/build-{{ target }} make -j {{ ansible_processor_vcpus }} clean

@@ -1,36 +1,36 @@
 # tasks file for pspsdk
 - name: Download PSP SDK
   git: repo=git://github.com/pspdev/pspsdk
-       dest=/tmp/pspsdk
+       dest={{ psptoolchain_tmp_path }}/pspsdk
        accept_hostkey=yes
 
 - name: aclocal
-  shell: chdir=/tmp/pspsdk aclocal -I aclocal
+  shell: chdir={{ psptoolchain_tmp_path }}/pspsdk aclocal -I aclocal
 
 - name: autoheader
-  shell: chdir=/tmp/pspsdk autoheader
+  shell: chdir={{ psptoolchain_tmp_path }}/pspsdk autoheader
 
 - name: automake
-  shell: chdir=/tmp/pspsdk automake -a -c --foreign
+  shell: chdir={{ psptoolchain_tmp_path }}/pspsdk automake -a -c --foreign
 
 - name: autoconf
-  shell: chdir=/tmp/pspsdk autoconf
+  shell: chdir={{ psptoolchain_tmp_path }}/pspsdk autoconf
 
 - name: Configure PSP SDK
-  shell: chdir=/tmp/pspsdk CFLAGS="$CFLAGS -I/opt/local/include" CPPFLAGS="$CPPFLAGS -I/opt/local/include" LDFLAGS="$LDFLAGS -L/opt/local/lib" ./configure --with-pspdev="{{ install_dir }}"
+  shell: chdir={{ psptoolchain_tmp_path }}/pspsdk CFLAGS="$CFLAGS -I/opt/local/include" CPPFLAGS="$CPPFLAGS -I/opt/local/include" LDFLAGS="$LDFLAGS -L/opt/local/lib" ./configure --with-pspdev="{{ install_dir }}"
 
 - name: Compile PSP SDK
-  shell: chdir=/tmp/pspsdk make -j {{ ansible_processor_vcpus }} clean && make -j {{ ansible_processor_vcpus }}
+  shell: chdir={{ psptoolchain_tmp_path }}/pspsdk make -j {{ ansible_processor_vcpus }} clean && make -j {{ ansible_processor_vcpus }}
   environment:
     PATH: "{{ ansible_env.PATH }}:{{ install_dir }}/bin"
 
 - name: Install PSP SDK
-  shell: chdir=/tmp/pspsdk make -j {{ ansible_processor_vcpus }} clean && make -j {{ ansible_processor_vcpus }} install
+  shell: chdir={{ psptoolchain_tmp_path }}/pspsdk make -j {{ ansible_processor_vcpus }} clean && make -j {{ ansible_processor_vcpus }} install
   sudo: yes
   environment:
     PATH: "{{ ansible_env.PATH }}:{{ install_dir }}/bin"
 
 - name: Clean PSP SDK
-  shell: chdir=/tmp/pspsdk make -j {{ ansible_processor_vcpus }} clean
+  shell: chdir={{ psptoolchain_tmp_path }}/pspsdk make -j {{ ansible_processor_vcpus }} clean
   environment:
     PATH: "{{ ansible_env.PATH }}:{{ install_dir }}/bin"

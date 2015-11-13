@@ -1,36 +1,36 @@
 - name: Download newlib-{{ psptoolchain_newlib_version }}
   get_url:
     url=ftp://sources.redhat.com/pub/newlib/newlib-{{ psptoolchain_newlib_version }}.tar.gz
-    dest=/tmp/
+    dest={{ psptoolchain_tmp_path }}/
 
 - name: Extract newlib-{{ psptoolchain_newlib_version }}
   unarchive:
-    src=/tmp/newlib-{{ psptoolchain_newlib_version }}.tar.gz
-    dest=/tmp
+    src={{ psptoolchain_tmp_path }}/newlib-{{ psptoolchain_newlib_version }}.tar.gz
+    dest={{ psptoolchain_tmp_path }}
     copy=no
 
 - name: Apply newlib-{{ psptoolchain_newlib_version }}-PSP patch
   patch:
     src=newlib-{{ psptoolchain_newlib_version }}-PSP.patch
-    basedir=/tmp/newlib-{{ psptoolchain_newlib_version }}
+    basedir={{ psptoolchain_tmp_path }}/newlib-{{ psptoolchain_newlib_version }}
     strip=1
 
 - name: Create build directory
-  file: path=/tmp/newlib-{{ psptoolchain_newlib_version }}/build-{{ target }} state=directory
+  file: path={{ psptoolchain_tmp_path }}/newlib-{{ psptoolchain_newlib_version }}/build-{{ target }} state=directory
 
 - name: Configure newlib-{{ psptoolchain_newlib_version }}
-  shell: chdir=/tmp/newlib-{{ psptoolchain_newlib_version }}/build-{{ target }} ../configure --prefix="{{ install_dir }}" --target="{{ target }}" --enable-newlib-iconv --enable-newlib-multithread --enable-newlib-mb
+  shell: chdir={{ psptoolchain_tmp_path }}/newlib-{{ psptoolchain_newlib_version }}/build-{{ target }} ../configure --prefix="{{ install_dir }}" --target="{{ target }}" --enable-newlib-iconv --enable-newlib-multithread --enable-newlib-mb
   environment:
     PATH: "{{ ansible_env.PATH }}:{{ install_dir }}/bin"
 
 - name: Compile newlib-{{ psptoolchain_newlib_version }}
-  shell: chdir=/tmp/newlib-{{ psptoolchain_newlib_version }}/build-{{ target }} make -j {{ ansible_processor_vcpus }} clean && make -j {{ ansible_processor_vcpus }}
+  shell: chdir={{ psptoolchain_tmp_path }}/newlib-{{ psptoolchain_newlib_version }}/build-{{ target }} make -j {{ ansible_processor_vcpus }} clean && make -j {{ ansible_processor_vcpus }}
   environment:
     PATH: "{{ ansible_env.PATH }}:{{ install_dir }}/bin"
 
 - name: Install newlib-{{ psptoolchain_newlib_version }}
   sudo: yes
-  shell: chdir=/tmp/newlib-{{ psptoolchain_newlib_version }}/build-{{ target }} make -j {{ ansible_processor_vcpus }} install
+  shell: chdir={{ psptoolchain_tmp_path }}/newlib-{{ psptoolchain_newlib_version }}/build-{{ target }} make -j {{ ansible_processor_vcpus }} install
 
 - name: Clean newlib-{{ psptoolchain_newlib_version }}
-  shell: chdir=/tmp/newlib-{{ psptoolchain_newlib_version }}/build-{{ target }} make -j {{ ansible_processor_vcpus }} clean
+  shell: chdir={{ psptoolchain_tmp_path }}/newlib-{{ psptoolchain_newlib_version }}/build-{{ target }} make -j {{ ansible_processor_vcpus }} clean

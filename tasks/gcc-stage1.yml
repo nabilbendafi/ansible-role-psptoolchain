@@ -1,72 +1,72 @@
 - name: Download gcc-{{ psptoolchain_gcc_version }}
   get_url:
     url=ftp://ftp.gnu.org/pub/gnu/gcc/gcc-{{ psptoolchain_gcc_version }}/gcc-{{ psptoolchain_gcc_version }}.tar.bz2
-    dest=/tmp/
+    dest={{ psptoolchain_tmp_path }}/
 
 - name: Extract gcc-{{ psptoolchain_gcc_version }}
   unarchive:
-    src=/tmp/gcc-{{ psptoolchain_gcc_version }}.tar.bz2
-    dest=/tmp
+    src={{ psptoolchain_tmp_path }}/gcc-{{ psptoolchain_gcc_version }}.tar.bz2
+    dest={{ psptoolchain_tmp_path }}
     copy=no
 
 - name: Apply gcc-{{ psptoolchain_gcc_version }}-PSP patch
   patch:
     src=gcc-{{ psptoolchain_gcc_version }}-PSP.patch
-    basedir=/tmp/gcc-{{ psptoolchain_gcc_version }}
+    basedir={{ psptoolchain_tmp_path }}/gcc-{{ psptoolchain_gcc_version }}
     strip=1
 
 - name: Download gmp-{{ psptoolchain_gmp_version }}
   get_url:
     url=http://gmplib.org/download/gmp/gmp-{{ psptoolchain_gmp_version }}.tar.bz2
-    dest=/tmp
+    dest={{ psptoolchain_tmp_path }}
 
 - name: Extract gmp-{{ psptoolchain_gmp_version }}
   unarchive:
-    src=/tmp/gmp-{{ psptoolchain_gmp_version }}.tar.bz2
-    dest=/tmp
+    src={{ psptoolchain_tmp_path }}/gmp-{{ psptoolchain_gmp_version }}.tar.bz2
+    dest={{ psptoolchain_tmp_path }}
     copy=no
 
 - name: Download mpc-{{ psptoolchain_mpc_version }}
   get_url:
     url=http://www.multiprecision.org/mpc/download/mpc-{{ psptoolchain_mpc_version }}.tar.gz
-    dest=/tmp
+    dest={{ psptoolchain_tmp_path }}
 
 - name: Extract mpc-{{ psptoolchain_mpc_version }}
   unarchive:
-    src=/tmp/mpc-{{ psptoolchain_mpc_version }}.tar.gz
-    dest=/tmp
+    src={{ psptoolchain_tmp_path }}/mpc-{{ psptoolchain_mpc_version }}.tar.gz
+    dest={{ psptoolchain_tmp_path }}
     copy=no
 
 - name: Download mpfr-{{ psptoolchain_mpfr_version }}
   get_url:
     url=http://ftp.gnu.org/gnu/mpfr/mpfr-{{ psptoolchain_mpfr_version }}.tar.bz2
-    dest=/tmp
+    dest={{ psptoolchain_tmp_path }}
 
 - name: Extract mpfr-{{ psptoolchain_mpfr_version }}
   unarchive:
-    src=/tmp/mpfr-{{ psptoolchain_mpfr_version }}.tar.bz2
-    dest=/tmp
+    src={{ psptoolchain_tmp_path }}/mpfr-{{ psptoolchain_mpfr_version }}.tar.bz2
+    dest={{ psptoolchain_tmp_path }}
     copy=no
 
 - name: Create build directory
-  file: src=/tmp/{{ item }} dest=/tmp/gcc-{{ psptoolchain_gcc_version }}/{{ item }} state=link
+  file: src={{ psptoolchain_tmp_path }}/{{ item }} dest={{ psptoolchain_tmp_path }}/gcc-{{ psptoolchain_gcc_version }}/{{ item }} state=link
   with_items:
     - gmp-{{ psptoolchain_gmp_version }}
     - mpc-{{ psptoolchain_mpc_version }}
     - mpfr-{{ psptoolchain_mpfr_version }}
 
 - name: Create build directory
-  file: path=/tmp/gcc-{{ psptoolchain_gcc_version }}/build-{{ target }} state=directory
+  file: path={{ psptoolchain_tmp_path }}/gcc-{{ psptoolchain_gcc_version }}/build-{{ target }} state=directory
 
 - name: Configure gcc-{{ psptoolchain_gcc_version }} for C
-  shell: chdir=/tmp/gcc-{{ psptoolchain_gcc_version }}/build-{{ target }}  CFLAGS="$CFLAGS -I/opt/local/include" CPPFLAGS="$CPPFLAGS -I/opt/local/include" LDFLAGS="$LDFLAGS -L/opt/local/lib" ../configure --prefix="{{ install_dir }}" --target="{{ target }}" --enable-languages="c" --enable-lto --with-newlib --with-gmp-include="gmp" --with-gmp-lib="gmp/.libs" --with-mpfr-include="../mpfr/src" --with-mpfr-lib="mpfr/src/.libs" --without-headers --disable-libssp
+  shell: chdir={{ psptoolchain_tmp_path }}/gcc-{{ psptoolchain_gcc_version }}/build-{{ target }}  CFLAGS="$CFLAGS -I/opt/local/include" CPPFLAGS="$CPPFLAGS -I/opt/local/include" LDFLAGS="$LDFLAGS -L/opt/local/lib" ../configure --prefix="{{ install_dir }}" --target="{{ target }}" --enable-languages="c" --enable-lto --with-newlib --with-gmp-include="gmp" --with-gmp-lib="gmp/.libs" --with-mpfr-include="../mpfr/src" --with-mpfr-lib="mpfr/src/.libs" --without-headers --disable-libssp
 
 - name: Compile gcc-{{ psptoolchain_gcc_version }} for C
-  shell: chdir=/tmp/gcc-{{ psptoolchain_gcc_version }}/build-{{ target }} make -j {{ ansible_processor_vcpus }} clean && make -r -j {{ ansible_processor_vcpus }}
+  shell: chdir={{ psptoolchain_tmp_path }}/gcc-{{ psptoolchain_gcc_version }}/build-{{ target }} make -j {{ ansible_processor_vcpus }} clean && make -r -j {{ ansible_processor_vcpus }}
 
 - name: Install gcc-{{ psptoolchain_gcc_version }} for C
   sudo: yes
-  shell: chdir=/tmp/gcc-{{ psptoolchain_gcc_version }}/build-{{ target }} make -j {{ ansible_processor_vcpus }} install
+  shell: chdir={{ psptoolchain_tmp_path }}/gcc-{{ psptoolchain_gcc_version }}/build-{{ target }} make -j {{ ansible_processor_vcpus }} install
 
 - name: Clean gcc-{{ psptoolchain_gcc_version }} for C
-  shell: chdir=/tmp/gcc-{{ psptoolchain_gcc_version }}/build-{{ target }} make -j {{ ansible_processor_vcpus }} clean
+  shell: chdir={{ psptoolchain_tmp_path }}/gcc-{{ psptoolchain_gcc_version }}/build-{{ target }} make -j {{ ansible_processor_vcpus }} clean
