@@ -1,6 +1,8 @@
 psptoolchain
 ============
 
+[![Build Status](https://travis-ci.org/nabilbendafi/ansible-role-psptoolchain.png?branch=master)](https://travis-ci.org/nabilbendafi/ansible-role-psptoolchain)
+
 This role installs and configures the open-source [psptoolchain](https://github.com/pspdev/psptoolchain) for PSP homebrew development.
 
 Installation
