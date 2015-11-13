@@ -1,0 +1,22 @@
+- name: Cleanup source directories
+  file: path="{{ psptoolchain_tmp_path }}/{{ item }}*" state=absent
+  with_items: 
+    - binutils-{{ psptoolchain_binutils_version }}
+    - gcc-{{ psptoolchain_gcc_version }}
+    - gmp-{{ psptoolchain_gmp_version }}
+    - mpc-{{ psptoolchain_mpc_version }}
+    - mpfr-{{ psptoolchain_mpfr_version }}
+    - newlib-{{ psptoolchain_newlib_version }}
+    - gbd-{{ psptoolchain_gdb_version }}
+    - insight-{{ psptoolchain_insight_version }}
+    - pspsdk
+
+- stat: path=/etc/profile.d/
+  register: st
+
+- fail: msg="Remember to add {{ install_dir }}/bin to your path..."
+  when: st.stat.isdir != True
+
+- name: Add {{ install_dir}} added to your systems login scripts!
+  shell: echo "export PSPDEV={{ install_dir }}" > /etc/profile.d/psptoolchain.sh && echo "export PATH=\$PATH:{{ install_dir }}/bin" >> /etc/profile.d/psptoolchain.sh
+        echo "$PSPDEV/bin added to your systems login scripts!"
