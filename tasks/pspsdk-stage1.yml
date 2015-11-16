@@ -1,6 +1,6 @@
 # tasks file for pspsdk
 - name: Download PSP SDK
-  git: repo=git://github.com/pspdev/pspsdk
+  git: repo=git://github.com/nabilbendafi/pspsdk
        dest={{ psptoolchain_tmp_path }}/pspsdk
        accept_hostkey=yes
 
