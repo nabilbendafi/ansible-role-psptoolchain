@@ -35,4 +35,4 @@
   shell: chdir={{ psptoolchain_tmp_path }}/binutils-{{ psptoolchain_binutils_version }}/build-{{ target }} make -j {{ ansible_processor_vcpus }} install
 
 - name: Clean binutils-{{ psptoolchain_binutils_version }}
-  shell: chdir={{ psptoolchain_tmp_path }}/binutils-{{ psptoolchain_binutils_version }}/build-{{ target }} make -j {{ ansible_processor_vcpus }} clean
+  file: path={{ psptoolchain_tmp_path }}/binutils-{{ psptoolchain_binutils_version }} state=absent

@@ -69,4 +69,4 @@
   shell: chdir={{ psptoolchain_tmp_path }}/gcc-{{ psptoolchain_gcc_version }}/build-{{ target }} make -j {{ ansible_processor_vcpus }} install
 
 - name: Clean gcc-{{ psptoolchain_gcc_version }} for C
-  shell: chdir={{ psptoolchain_tmp_path }}/gcc-{{ psptoolchain_gcc_version }}/build-{{ target }} make -j {{ ansible_processor_vcpus }} clean
+  file: path={{ psptoolchain_tmp_path }}/gcc-{{ psptoolchain_gcc_version }} state=absent

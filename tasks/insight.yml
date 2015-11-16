@@ -29,4 +29,4 @@
   shell: chdir={{ psptoolchain_tmp_path }}/insight-{{ psptoolchain_insight_version }}/build-{{ target }} make -j {{ ansible_processor_vcpus }} install
 
 - name: Clean insight-{{ psptoolchain_insight_version }}
-  shell: chdir={{ psptoolchain_tmp_path }}/insight-{{ psptoolchain_insight_version }}/build-{{ target }} make -j {{ ansible_processor_vcpus }} clean
+  file: path={{ psptoolchain_tmp_path }}/insight-{{ psptoolchain_insight_version }} state=absent

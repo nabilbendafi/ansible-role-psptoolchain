@@ -53,4 +53,4 @@
     PATH: "{{ ansible_env.PATH }}:{{ install_dir }}/bin"
 
 - name: Clean gdb-{{ psptoolchain_gdb_version }}
-  shell: chdir={{ psptoolchain_tmp_path }}/gdb-{{ psptoolchain_gdb_version }}/build-{{ target }} make -j {{ ansible_processor_vcpus }} clean
+  file: path={{ psptoolchain_tmp_path }}/gdb-{{ psptoolchain_gdb_version }} state=absent

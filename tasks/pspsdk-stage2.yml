@@ -31,6 +31,4 @@
     PATH: "{{ ansible_env.PATH }}:{{ install_dir }}/bin"
 
 - name: Clean PSP SDK
-  shell: chdir={{ psptoolchain_tmp_path }}/pspsdk make -j {{ ansible_processor_vcpus }} clean
-  environment:
-    PATH: "{{ ansible_env.PATH }}:{{ install_dir }}/bin"
+  file: path={{ psptoolchain_tmp_path }}/pspsdk state=absent
