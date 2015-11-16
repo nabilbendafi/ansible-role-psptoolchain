@@ -25,7 +25,7 @@
     PATH: "{{ ansible_env.PATH }}:{{ install_dir }}/bin"
 
 - name: Install PSP SDK
-  shell: chdir={{ psptoolchain_tmp_path }}/pspsdk make -j {{ ansible_processor_vcpus }} clean && make -j {{ ansible_processor_vcpus }} install
+  shell: chdir={{ psptoolchain_tmp_path }}/pspsdk make -j {{ ansible_processor_vcpus }} && make -j {{ ansible_processor_vcpus }} install
   sudo: yes
   environment:
     PATH: "{{ ansible_env.PATH }}:{{ install_dir }}/bin"
