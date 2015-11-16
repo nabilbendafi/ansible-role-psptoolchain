@@ -7,4 +7,5 @@
 - include: pspsdk-stage2.yml
 - include: gdb.yml
 - include: insight.yml
+- include: psplinkusb.yml
 - include: profile.yml
