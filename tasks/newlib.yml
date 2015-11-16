@@ -31,6 +31,8 @@
 - name: Install newlib-{{ psptoolchain_newlib_version }}
   sudo: yes
   shell: chdir={{ psptoolchain_tmp_path }}/newlib-{{ psptoolchain_newlib_version }}/build-{{ target }} make -j {{ ansible_processor_vcpus }} install
+  environment:
+    PATH: "{{ ansible_env.PATH }}:{{ install_dir }}/bin"
 
 - name: Clean newlib-{{ psptoolchain_newlib_version }}
   shell: chdir={{ psptoolchain_tmp_path }}/newlib-{{ psptoolchain_newlib_version }}/build-{{ target }} make -j {{ ansible_processor_vcpus }} clean
