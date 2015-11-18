@@ -14,9 +14,9 @@
 - stat: path=/etc/profile.d/
   register: st
 
-- fail: msg="Remember to add {{ install_dir }}/bin to your path..."
+- fail: msg="Remember to add installation directory to your path..."
   when: st.stat.isdir != True
 
-- name: Add {{ install_dir}} added to your systems login scripts!
-  shell: echo "export PSPDEV={{ install_dir }}" > /etc/profile.d/psptoolchain.sh && echo "export PATH=\$PATH:{{ install_dir }}/bin" >> /etc/profile.d/psptoolchain.sh
-        echo "$PSPDEV/bin added to your systems login scripts!"
+- name: Update environment paths of your systems login scripts!
+  sudo: yes
+  template: src=psptoolchain.sh dest=/etc/profile.d/psptoolchain.sh
