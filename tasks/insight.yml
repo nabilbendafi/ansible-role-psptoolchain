@@ -19,10 +19,17 @@
   file: path={{ psptoolchain_tmp_path }}/insight-{{ psptoolchain_insight_version }}/build-{{ target }} state=directory
 
 - name: Configure insight-{{ psptoolchain_insight_version }}
-  shell: chdir={{ psptoolchain_tmp_path }}/insight-{{ psptoolchain_insight_version }}/build-{{ target }}  CFLAGS="$CFLAGS -I/opt/local/include" CPPFLAGS="$CPPFLAGS -I/opt/local/include" LDFLAGS="$LDFLAGS -L/opt/local/lib" ../configure --prefix="{{ install_dir }}" --target="{{ target }}" --disable-nls --disable-werror
+  shell: chdir={{ psptoolchain_tmp_path }}/insight-{{ psptoolchain_insight_version }}/build-{{ target }} ../configure --prefix="{{ install_dir }}" --target="{{ target }}" --disable-nls --disable-werror
+  environment:
+    CFLAGS: -I/opt/local/include
+    CPPFLAGS: -I/opt/local/include
+    LDFLAGS: -L/opt/local/lib
 
 - name: Compile insight-{{ psptoolchain_insight_version }}
-  shell: chdir={{ psptoolchain_tmp_path }}/insight-{{ psptoolchain_insight_version }}/build-{{ target }} make -j {{ ansible_processor_vcpus }} clean && make -r -j {{ ansible_processor_vcpus }}
+  shell: chdir={{ psptoolchain_tmp_path }}/insight-{{ psptoolchain_insight_version }}/build-{{ target }} {{ item }}
+  with_items:
+    - make -j {{ ansible_processor_vcpus }} clean
+    - make -j {{ ansible_processor_vcpus }}
 
 - name: Install insight-{{ psptoolchain_insight_version }}
   sudo: yes

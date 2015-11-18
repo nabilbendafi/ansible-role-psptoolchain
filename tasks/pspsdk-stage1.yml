@@ -17,10 +17,17 @@
   shell: chdir={{ psptoolchain_tmp_path }}/pspsdk autoconf
 
 - name: Configure PSP SDK
-  shell: chdir={{ psptoolchain_tmp_path }}/pspsdk CFLAGS="$CFLAGS -I/opt/local/include" CPPFLAGS="$CPPFLAGS -I/opt/local/include" LDFLAGS="$LDFLAGS -L/opt/local/lib" ./configure --with-pspdev="{{ install_dir }}"
+  shell: chdir={{ psptoolchain_tmp_path }}/pspsdk ./configure --with-pspdev="{{ install_dir }}"
+  environment:
+    CFLAGS: -I/opt/local/include
+    CPPFLAGS: -I/opt/local/include
+    LDFLAGS: -L/opt/local/lib
 
 - name: Install PSP SDK (headers only)
-  shell: chdir={{ psptoolchain_tmp_path }}/pspsdk make -j {{ ansible_processor_vcpus }} clean && make -j {{ ansible_processor_vcpus }} install-data
+  shell: chdir={{ psptoolchain_tmp_path }}/pspsdk {{ item }}
+  with_items:
+    - make -j {{ ansible_processor_vcpus }} clean
+    - make -j {{ ansible_processor_vcpus }} install-data
   sudo: yes
   environment:
     PATH: "{{ ansible_env.PATH }}:{{ install_dir }}/bin"

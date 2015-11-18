@@ -59,10 +59,17 @@
   file: path={{ psptoolchain_tmp_path }}/gcc-{{ psptoolchain_gcc_version }}/build-{{ target }} state=directory
 
 - name: Configure gcc-{{ psptoolchain_gcc_version }} for C
-  shell: chdir={{ psptoolchain_tmp_path }}/gcc-{{ psptoolchain_gcc_version }}/build-{{ target }}  CFLAGS="$CFLAGS -I/opt/local/include" CPPFLAGS="$CPPFLAGS -I/opt/local/include" LDFLAGS="$LDFLAGS -L/opt/local/lib" ../configure --prefix="{{ install_dir }}" --target="{{ target }}" --enable-languages="c" --enable-lto --with-newlib --with-gmp-include="gmp" --with-gmp-lib="gmp/.libs" --with-mpfr-include="../mpfr/src" --with-mpfr-lib="mpfr/src/.libs" --without-headers --disable-libssp
+  shell: chdir={{ psptoolchain_tmp_path }}/gcc-{{ psptoolchain_gcc_version }}/build-{{ target }}  ../configure --prefix="{{ install_dir }}" --target="{{ target }}" --enable-languages="c" --enable-lto --with-newlib --with-gmp-include="gmp" --with-gmp-lib="gmp/.libs" --with-mpfr-include="../mpfr/src" --with-mpfr-lib="mpfr/src/.libs" --without-headers --disable-libssp
+  environment:
+    CFLAGS: -I/opt/local/include
+    CPPFLAGS: -I/opt/local/include
+    LDFLAGS: -L/opt/local/lib 
 
 - name: Compile gcc-{{ psptoolchain_gcc_version }} for C
-  shell: chdir={{ psptoolchain_tmp_path }}/gcc-{{ psptoolchain_gcc_version }}/build-{{ target }} make -j {{ ansible_processor_vcpus }} clean && make -r -j {{ ansible_processor_vcpus }}
+  shell: chdir={{ psptoolchain_tmp_path }}/gcc-{{ psptoolchain_gcc_version }}/build-{{ target }} {{ item }}
+  with_items:
+    - make -j {{ ansible_processor_vcpus }} clean
+    - make -r -j {{ ansible_processor_vcpus }}
 
 - name: Install gcc-{{ psptoolchain_gcc_version }} for C
   sudo: yes

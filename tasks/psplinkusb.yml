@@ -5,12 +5,15 @@
        accept_hostkey=yes
 
 - name: Compile PSP linkusb
-  shell: chdir={{ psptoolchain_tmp_path }}/psplinkusb make -f Makefile.clients -j {{ ansible_processor_vcpus }} clean && make -f Makefile.clients -j {{ ansible_processor_vcpus }}
+  shell: chdir={{ psptoolchain_tmp_path }}/psplinkusb {{ item }}
+  with_items:
+    - make -f Makefile.clients -j {{ ansible_processor_vcpus }} clean
+    - make -f Makefile.clients -j {{ ansible_processor_vcpus }}
   environment:
     PATH: "{{ ansible_env.PATH }}:{{ install_dir }}/bin"
 
 - name: Install PSP linkusb
-  shell: chdir={{ psptoolchain_tmp_path }}/psplinkusb make -f Makefile.clients -j {{ ansible_processor_vcpus }} && make -f Makefile.clients -j {{ ansible_processor_vcpus }} install
+  shell: chdir={{ psptoolchain_tmp_path }}/psplinkusb make -f Makefile.clients -j {{ ansible_processor_vcpus }} install
   sudo: yes
   environment:
     PATH: "{{ ansible_env.PATH }}:{{ install_dir }}/bin"
