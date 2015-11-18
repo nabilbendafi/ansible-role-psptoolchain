@@ -25,7 +25,7 @@
   file: path={{ psptoolchain_tmp_path }}/binutils-{{ psptoolchain_binutils_version }}/build-{{ target }} state=directory
 
 - name: Configure binutils-{{ psptoolchain_binutils_version }}
-  shell: chdir={{ psptoolchain_tmp_path }}/binutils-{{ psptoolchain_binutils_version }}/build-{{ target }} CFLAGS="$CFLAGS -I/opt/local/include -Wno-error" CPPFLAGS="$CPPFLAGS -I/opt/local/include -Wno-error" LDFLAGS="$LDFLAGS -L/opt/local/lib" ../configure --prefix="{{ install_dir }}" --target="{{ target }}" --enable-install-libbfd
+  shell: chdir={{ psptoolchain_tmp_path }}/binutils-{{ psptoolchain_binutils_version }}/build-{{ target }} CFLAGS="$CFLAGS -I/opt/local/include -Wno-error" CPPFLAGS="$CPPFLAGS -I/opt/local/include -Wno-error" LDFLAGS="$LDFLAGS -L/opt/local/lib" ../configure --prefix="{{ install_dir }}" --target="{{ target }}" --enable-install-libbfd --without-ppl --without-cloog
 
 - name: Compile binutils-{{ psptoolchain_binutils_version }}
   shell: chdir={{ psptoolchain_tmp_path }}/binutils-{{ psptoolchain_binutils_version }}/build-{{ target }} make -j {{ ansible_processor_vcpus }} clean &&  make -r -j {{ ansible_processor_vcpus }}
