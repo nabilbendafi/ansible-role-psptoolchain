@@ -8,4 +8,5 @@
 - include: gdb.yml
 - include: insight.yml
 - include: psplinkusb.yml
+- include: ebootsigner.yml
 - include: profile.yml
