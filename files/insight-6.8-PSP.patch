@@ -1520,3 +1520,15 @@ diff -burN orig.insight-6.8/tcl/win/tclWinChan.c insight-6.8/tcl/win/tclWinChan.
  #endif /* HAVE_NO_SEH */
  
  
+diff -burN orig.insight-6.8/itcl/itcl/Makefile.in insight-6.8/itcl/itcl/Makefile.in
+--- orig.insight-6.8/itcl/itcl/Makefile.in	2005-09-01 07:32:08.000000000 +0200
++++ insight-6.8/itcl/itcl/Makefile.in	2015-11-18 15:31:06.958972067 +0100
+@@ -226,7 +226,7 @@
+ DEFS = @DEFS@ $(EXTRA_CFLAGS) -DITCL_LIBRARY=\"$(ITCL_LIBRARY)\"
+ 
+ ACLOCAL_M4 = $(srcdir)/aclocal.m4
+-mkinstalldirs = $(SHELL) $(top_srcdir)/../config/mkinstalldirs
++mkinstalldirs = $(SHELL) $(top_srcdir)/../../mkinstalldirs
+ 
+ CPPFLAGS = @CPPFLAGS@
+ LIBS = @LIBS@
