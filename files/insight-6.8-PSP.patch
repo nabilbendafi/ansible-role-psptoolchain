@@ -1532,6 +1532,15 @@ diff -burN orig.insight-6.8/itcl/itcl/Makefile.in insight-6.8/itcl/itcl/Makefile
  
  CPPFLAGS = @CPPFLAGS@
  LIBS = @LIBS@
+@@ -271,7 +271,7 @@
+ # This rule installs platform-independent files, such as header files.
+ #========================================================================
+ 
+-install-libraries: libraries
++install-libraries: libraries installdirs
+ 	$(mkinstalldirs) $(includedir)
+ 	@echo "Installing header files in $(includedir)"
+ 	@for i in $(GENERIC_HDRS) ; do \
 diff -burN orig.insight-6.8/itcl/itk/Makefile.in insight-6.8/itcl/itk/Makefile.in
 --- orig.insight-6.8/itcl/itk/Makefile.in	2005-09-01 07:32:09.000000000 +0200
 +++ insight-6.8/itcl/itk/Makefile.in	2015-12-11 09:36:56.277615358 +0100
@@ -1544,6 +1553,15 @@ diff -burN orig.insight-6.8/itcl/itk/Makefile.in insight-6.8/itcl/itk/Makefile.i
  
  CPPFLAGS = @CPPFLAGS@
  LIBS = @LIBS@
+@@ -266,7 +266,7 @@
+ # This rule installs platform-independent files, such as header files.
+ #========================================================================
+ 
+-install-libraries: libraries
++install-libraries: libraries installdirs
+ 	$(mkinstalldirs) $(includedir)
+ 	@echo "Installing header files in $(includedir)"
+ 	@for i in $(GENERIC_HDRS) ; do \
 diff -burN orig.insight-6.8/itcl/iwidgets/Makefile.in insight-6.8/itcl/iwidgets/Makefile.in
 --- orig.insight-6.8/itcl/iwidgets/Makefile.in	2003-02-25 01:42:12.000000000 +0100
 +++ insight-6.8/itcl/iwidgets/Makefile.in	2015-12-11 10:08:00.185675005 +0100
@@ -1556,3 +1574,50 @@ diff -burN orig.insight-6.8/itcl/iwidgets/Makefile.in insight-6.8/itcl/iwidgets/
  RANLIB =		@RANLIB@
  LN_S =			ln -s
  TOP_DIR =		$(srcdir)
+@@ -126,8 +126,8 @@
+ 	$(TCLSH_PROG) `@CYGPATH@ $(srcdir)/tests/all.tcl` \
+ 		-exedir `@CYGPATH@ $(TK_SRC_DIR)/unix` $(TESTFLAGS)
+ 
+-install-libraries:
+-	@$(MKINSTALLDIRS) $(SCRIPT_INSTALL_DIR) $(LIB_INSTALL_DIR)
++install-libraries: installdirs
++	@$(MKINSTALLDIRS) $(LIB_INSTALL_DIR)
+ 	@rm -f $(LIB_INSTALL_DIR)/iwidgets
+ # REDHAT LOCAL
+ #	$(LN_S) $(SCRIPT_INSTALL_DIR) $(LIB_INSTALL_DIR)/iwidgets
+@@ -144,7 +144,7 @@
+ 	    $(INSTALL_DATA) $$i $(SCRIPT_INSTALL_DIR); \
+ 	    done;
+ 
+-install-demos:
++install-demos: installdirs
+ 	@$(MKINSTALLDIRS) $(SCRIPT_INSTALL_DIR)/demos/images $(SCRIPT_INSTALL_DIR)/demos/html
+ 	@echo "Installing demos from $(srcdir)/demos into $(SCRIPT_INSTALL_DIR)/demos"
+ 	@for i in $(srcdir)/demos/*; \
+@@ -168,7 +168,7 @@
+ 	    fi; \
+ 	    done;
+ 
+-install-doc:
++install-doc: installdirs
+ 	@$(MKINSTALLDIRS) $(MAN_INSTALL_DIR)
+ 	@echo "Installing man pages from $(TOP_DIR)/doc into $(MAN_INSTALL_DIR)"
+ 	@cd $(TOP_DIR)/doc; for i in *.n; \
+@@ -181,6 +181,9 @@
+ 	    done;
+ 	$(INSTALL_DATA) $(srcdir)/license.terms $(SCRIPT_INSTALL_DIR)
+ 
++installdirs:
++	$(MKINSTALLDIRS) $(SCRIPT_INSTALL_DIR)
++
+ Makefile: $(srcdir)/Makefile.in
+ 	$(SHELL) config.status
+ 
+@@ -196,4 +199,7 @@
+ configure: configure.in
+ 	autoconf
+ 
++.PHONY: info all install test install-libraries install-demos install-doc \
++installdirs clean depend distclean
++
+ # DO NOT DELETE THIS LINE -- make depend depends on it.
