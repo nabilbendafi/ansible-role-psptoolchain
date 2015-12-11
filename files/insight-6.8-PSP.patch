@@ -1544,3 +1544,15 @@ diff -burN orig.insight-6.8/itcl/itk/Makefile.in insight-6.8/itcl/itk/Makefile.i
  
  CPPFLAGS = @CPPFLAGS@
  LIBS = @LIBS@
+diff -burN orig.insight-6.8/itcl/iwidgets/Makefile.in insight-6.8/itcl/iwidgets/Makefile.in
+--- orig.insight-6.8/itcl/iwidgets/Makefile.in	2003-02-25 01:42:12.000000000 +0100
++++ insight-6.8/itcl/iwidgets/Makefile.in	2015-12-11 10:08:00.185675005 +0100
+@@ -90,7 +90,7 @@
+ INSTALL_PROGRAM =	$(INSTALL)
+ INSTALL_DATA =		$(INSTALL) -m 644
+ INSTALL_SCRIPT =	$(INSTALL) -m 555
+-MKINSTALLDIRS =		$(ITCL_SRC_DIR)/../config/mkinstalldirs
++MKINSTALLDIRS =		$(ITCL_SRC_DIR)/../../mkinstalldirs
+ RANLIB =		@RANLIB@
+ LN_S =			ln -s
+ TOP_DIR =		$(srcdir)
