@@ -1532,3 +1532,15 @@ diff -burN orig.insight-6.8/itcl/itcl/Makefile.in insight-6.8/itcl/itcl/Makefile
  
  CPPFLAGS = @CPPFLAGS@
  LIBS = @LIBS@
+diff -burN orig.insight-6.8/itcl/itk/Makefile.in insight-6.8/itcl/itk/Makefile.in
+--- orig.insight-6.8/itcl/itk/Makefile.in	2005-09-01 07:32:09.000000000 +0200
++++ insight-6.8/itcl/itk/Makefile.in	2015-12-11 09:36:56.277615358 +0100
+@@ -221,7 +221,7 @@
+ DEFS = @DEFS@ $(EXTRA_CFLAGS) -DITK_LIBRARY=\"$(ITK_LIBRARY)\"
+ 
+ ACLOCAL_M4 = $(srcdir)/aclocal.m4
+-mkinstalldirs = $(SHELL) $(top_srcdir)/../config/mkinstalldirs
++mkinstalldirs = $(SHELL) $(top_srcdir)/../../mkinstalldirs
+ 
+ CPPFLAGS = @CPPFLAGS@
+ LIBS = @LIBS@
