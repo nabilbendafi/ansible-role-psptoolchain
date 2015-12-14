@@ -1,30 +1,50 @@
 # tasks file for pspsdk
 - name: Download PSP SDK
-  git: repo=git://github.com/nabilbendafi/pspsdk
-       dest={{ psptoolchain_tmp_path }}/pspsdk
-       accept_hostkey=yes
+  git:
+    repo: git://github.com/nabilbendafi/pspsdk
+    dest: "{{ psptoolchain_tmp_path }}/pspsdk"
+    accept_hostkey: yes
+    force: yes
 
 - name: aclocal
-  shell: chdir={{ psptoolchain_tmp_path }}/pspsdk aclocal -I aclocal
+  shell: aclocal -I aclocal
+  args:
+    chdir: "{{ psptoolchain_tmp_path }}/pspsdk"
+    creates: "{{ psptoolchain_tmp_path }}/pspsdk/aclocal.m4"
 
 - name: autoheader
-  shell: chdir={{ psptoolchain_tmp_path }}/pspsdk autoheader
+  shell: autoheader
+  args:
+    chdir: "{{ psptoolchain_tmp_path }}/pspsdk"
+    creates: "{{ psptoolchain_tmp_path }}/pspsdk/config.h.in"
 
 - name: automake
-  shell: chdir={{ psptoolchain_tmp_path }}/pspsdk automake -a -c --foreign
+  shell: automake -a -c --foreign
+  args:
+    chdir: "{{ psptoolchain_tmp_path }}/pspsdk"
+    creates: "{{ psptoolchain_tmp_path }}/pspsdk/Makefile.in"
 
 - name: autoconf
-  shell: chdir={{ psptoolchain_tmp_path }}/pspsdk autoconf
+  shell: autoconf
+  args:
+    chdir: "{{ psptoolchain_tmp_path }}/pspsdk"
+    creates: "{{ psptoolchain_tmp_path }}/pspsdk/configure"
 
 - name: Configure PSP SDK
-  shell: chdir={{ psptoolchain_tmp_path }}/pspsdk ./configure --with-pspdev="{{ install_dir }}"
+  shell: ./configure --with-pspdev="{{ install_dir }}"
+  args:
+    chdir: "{{ psptoolchain_tmp_path }}/pspsdk"
+    creates: "{{ psptoolchain_tmp_path }}/pspsdk/config.h"
   environment:
     CFLAGS: -I/opt/local/include
     CPPFLAGS: -I/opt/local/include
     LDFLAGS: -L/opt/local/lib
 
 - name: Compile PSP SDK
-  shell: chdir={{ psptoolchain_tmp_path }}/pspsdk {{ item }}
+  shell: "{{ item }}"
+  args:
+    chdir: "{{ psptoolchain_tmp_path }}/pspsdk"
+    creates: "{{ psptoolchain_tmp_path }}/pspsdk/tools/psp-config"
   with_items:
     - make -j {{ ansible_processor_vcpus }} clean
     - make -j {{ ansible_processor_vcpus }}
@@ -32,10 +52,10 @@
     PATH: "{{ ansible_env.PATH }}:{{ install_dir }}/bin"
 
 - name: Install PSP SDK
-  shell: chdir={{ psptoolchain_tmp_path }}/pspsdk make -j {{ ansible_processor_vcpus }} install
+  shell: make -j {{ ansible_processor_vcpus }} install
+  args:
+    chdir: "{{ psptoolchain_tmp_path }}/pspsdk"
+    creates: "{{ install_dir }}/bin/psp-config"
   sudo: yes
   environment:
     PATH: "{{ ansible_env.PATH }}:{{ install_dir }}/bin"
-
-- name: Clean PSP SDK
-  file: path={{ psptoolchain_tmp_path }}/pspsdk state=absent

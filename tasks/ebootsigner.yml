@@ -1,19 +1,24 @@
 # tasks file for psplinkusb
 - name: Download PSP eboot signer
-  git: repo=git://github.com/int-0/ebootsigner
-       dest={{ psptoolchain_tmp_path }}/ebootsigner
-       accept_hostkey=yes
+  git: 
+    repo: git://github.com/int-0/ebootsigner
+    dest: "{{ psptoolchain_tmp_path }}/ebootsigner"
+    accept_hostkey: yes
+    force: yes
 
 - name: Compile PSP eboot signer
-  shell: chdir={{ psptoolchain_tmp_path }}/ebootsigner make -j {{ ansible_processor_vcpus }}
+  shell: make -j {{ ansible_processor_vcpus }}
+  args:
+    chdir: "{{ psptoolchain_tmp_path }}/ebootsigner"
+    creates: "{{ psptoolchain_tmp_path }}/ebootsigner/ebootsign"
   environment:
     PATH: "{{ ansible_env.PATH }}:{{ install_dir }}/bin"
 
 - name: Install PSP eboot signer
-  shell: chdir={{ psptoolchain_tmp_path }}/ebootsigner make -j {{ ansible_processor_vcpus }} install
+  shell: make -j {{ ansible_processor_vcpus }} install
+  args:
+    chdir: "{{ psptoolchain_tmp_path }}/ebootsigner"
+    creates: "{{ install_dir }}/bin/ebootsign"
   sudo: yes
   environment:
     PATH: "{{ ansible_env.PATH }}:{{ install_dir }}/bin"
-
-- name: Clean PSP eboot signer
-  file: path={{ psptoolchain_tmp_path }}/ebootsigner state=absent

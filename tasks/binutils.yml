@@ -1,45 +1,56 @@
 - name: Download binutils-{{ psptoolchain_binutils_version }}
   get_url:
-    url=ftp://ftp.gnu.org/pub/gnu/binutils/binutils-{{ psptoolchain_binutils_version }}.tar.bz2
-    dest={{ psptoolchain_tmp_path }}/
+    url: ftp://ftp.gnu.org/pub/gnu/binutils/binutils-{{ psptoolchain_binutils_version }}.tar.bz2
+    dest: "{{ psptoolchain_tmp_path }}"
+    sha256sum: 6c7af8ed1c8cf9b4b9d6e6fe09a3e1d3d479fe63984ba8b9b26bf356b6313ca9
 
 - name: Extract binutils-{{ psptoolchain_binutils_version }}
   unarchive:
-    src={{ psptoolchain_tmp_path }}/binutils-{{ psptoolchain_binutils_version }}.tar.bz2
-    dest={{ psptoolchain_tmp_path }}
-    copy=no
+    src: "{{ psptoolchain_tmp_path }}/binutils-{{ psptoolchain_binutils_version }}.tar.bz2"
+    dest: "{{ psptoolchain_tmp_path }}"
+    copy: no
+    creates: "{{ psptoolchain_tmp_path }}/binutils-{{ psptoolchain_binutils_version }}/Makefile.in"
 
 - name: Apply binutils-{{ psptoolchain_binutils_version }}-PSP patch
   patch:
-    src=binutils-{{ psptoolchain_binutils_version }}-PSP.patch
-    basedir={{ psptoolchain_tmp_path }}/binutils-{{ psptoolchain_binutils_version }}
-    strip=1
+    src: binutils-{{ psptoolchain_binutils_version }}-PSP.patch
+    basedir: "{{ psptoolchain_tmp_path }}/binutils-{{ psptoolchain_binutils_version }}"
+    strip: 1
+  failed_when: False
 
 - name: Apply binutils-{{ psptoolchain_binutils_version }}-texinfofix patch
   patch:
-    src=binutils-{{ psptoolchain_binutils_version }}-texinfofix.patch
-    basedir={{ psptoolchain_tmp_path }}/binutils-{{ psptoolchain_binutils_version }}
-    strip=1
+    src: binutils-{{ psptoolchain_binutils_version }}-texinfofix.patch
+    basedir: "{{ psptoolchain_tmp_path }}/binutils-{{ psptoolchain_binutils_version }}"
+    strip: 1
+  failed_when: False
 
 - name: Create build directory
-  file: path={{ psptoolchain_tmp_path }}/binutils-{{ psptoolchain_binutils_version }}/build-{{ target }} state=directory
+  file:
+    path: "{{ psptoolchain_tmp_path }}/binutils-{{ psptoolchain_binutils_version }}/build-{{ target }}"
+    state: directory
 
 - name: Configure binutils-{{ psptoolchain_binutils_version }}
-  shell: chdir={{ psptoolchain_tmp_path }}/binutils-{{ psptoolchain_binutils_version }}/build-{{ target }} ../configure --prefix="{{ install_dir }}" --target="{{ target }}" --enable-install-libbfd --disable-ppl-version-check --without-ppl --disable-cloog-version-check --without-cloog
+  shell: ../configure --prefix="{{ install_dir }}" --target="{{ target }}" --enable-install-libbfd --disable-ppl-version-check --without-ppl --disable-cloog-version-check --without-cloog
+    chdir={{ psptoolchain_tmp_path }}/binutils-{{ psptoolchain_binutils_version }}/build-{{ target }}
+    creates="{{ psptoolchain_tmp_path }}/binutils-{{ psptoolchain_binutils_version }}/build-{{ target }}/Makefile"
   environment:
     CFLAGS: -I/opt/local/include -Wno-error
     CPPFLAGS: -I/opt/local/include -Wno-error
     LDFLAGS: -L/opt/local/lib
 
 - name: Compile binutils-{{ psptoolchain_binutils_version }}
-  shell: chdir={{ psptoolchain_tmp_path }}/binutils-{{ psptoolchain_binutils_version }}/build-{{ target }} {{ item }}
+  shell: "{{ item }}"
+  args:
+    chdir: "{{ psptoolchain_tmp_path }}/binutils-{{ psptoolchain_binutils_version }}/build-{{ target }}"
+    creates: "{{ psptoolchain_tmp_path }}/binutils-{{ psptoolchain_binutils_version }}/build-{{ target }}/ld/ld-new"
   with_items:
     - make -j {{ ansible_processor_vcpus }} clean
     - make -r -j {{ ansible_processor_vcpus }}
 
 - name: Install binutils-{{ psptoolchain_binutils_version }}
   sudo: yes
-  shell: chdir={{ psptoolchain_tmp_path }}/binutils-{{ psptoolchain_binutils_version }}/build-{{ target }} make -j {{ ansible_processor_vcpus }} install
-
-- name: Clean binutils-{{ psptoolchain_binutils_version }}
-  file: path={{ psptoolchain_tmp_path }}/binutils-{{ psptoolchain_binutils_version }} state=absent
+  shell: make -j {{ ansible_processor_vcpus }} install
+  args:
+    chdir: "{{ psptoolchain_tmp_path }}/binutils-{{ psptoolchain_binutils_version }}/build-{{ target }}"
+    creates: "{{ install_dir }}/bin/psp-ld"

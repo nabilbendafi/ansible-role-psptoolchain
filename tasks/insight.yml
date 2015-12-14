@@ -1,39 +1,50 @@
 - name: Download insight-{{ psptoolchain_insight_version }}
   get_url:
-    url=ftp://sourceware.org/pub/insight/releases/insight-{{ psptoolchain_insight_version }}a.tar.bz2
-    dest={{ psptoolchain_tmp_path }}/
+    url: ftp://sourceware.org/pub/insight/releases/insight-{{ psptoolchain_insight_version }}a.tar.bz2
+    dest: "{{ psptoolchain_tmp_path }}"
+    sha256sum: f18fbf5f6ebaf41c7e2b785513b0c46fb03c17c6230bafb5c20abf9d8503bc5d
 
 - name: Extract insight-{{ psptoolchain_insight_version }}
   unarchive:
-    src={{ psptoolchain_tmp_path }}/insight-{{ psptoolchain_insight_version }}a.tar.bz2
-    dest={{ psptoolchain_tmp_path }}
-    copy=no
+    src: "{{ psptoolchain_tmp_path }}/insight-{{ psptoolchain_insight_version }}a.tar.bz2"
+    dest: "{{ psptoolchain_tmp_path }}"
+    copy: no
+    creates: "{{ psptoolchain_tmp_path }}/insight-{{ psptoolchain_insight_version }}/Makefile.in"
 
 - name: Apply insight-{{ psptoolchain_insight_version }}-PSP patch
   patch:
-    src=insight-{{ psptoolchain_insight_version }}-PSP.patch
-    basedir={{ psptoolchain_tmp_path }}/insight-{{ psptoolchain_insight_version }}
-    strip=1
+    src: insight-{{ psptoolchain_insight_version }}-PSP.patch
+    basedir: "{{ psptoolchain_tmp_path }}/insight-{{ psptoolchain_insight_version }}"
+    strip: 1
+  failed_when: False
 
 - name: Create build directory
-  file: path={{ psptoolchain_tmp_path }}/insight-{{ psptoolchain_insight_version }}/build-{{ target }} state=directory
+  file:
+    path: "{{ psptoolchain_tmp_path }}/insight-{{ psptoolchain_insight_version }}/build-{{ target }}"
+    state: directory
 
 - name: Configure insight-{{ psptoolchain_insight_version }}
-  shell: chdir={{ psptoolchain_tmp_path }}/insight-{{ psptoolchain_insight_version }}/build-{{ target }} ../configure --prefix="{{ install_dir }}" --target="{{ target }}" --disable-nls --disable-werror
+  shell: ../configure --prefix="{{ install_dir }}" --target="{{ target }}" --disable-nls --disable-werror
+  args:
+    chdir: "{{ psptoolchain_tmp_path }}/insight-{{ psptoolchain_insight_version }}/build-{{ target }}"
+    creates: "{{ psptoolchain_tmp_path }}/insight-{{ psptoolchain_insight_version }}/build-{{ target }}/Makefile"
   environment:
     CFLAGS: -I/opt/local/include
     CPPFLAGS: -I/opt/local/include
     LDFLAGS: -L/opt/local/lib
 
 - name: Compile insight-{{ psptoolchain_insight_version }}
-  shell: chdir={{ psptoolchain_tmp_path }}/insight-{{ psptoolchain_insight_version }}/build-{{ target }} {{ item }}
+  shell: "{{ item }}"
+  args:
+    chdir: "{{ psptoolchain_tmp_path }}/insight-{{ psptoolchain_insight_version }}/build-{{ target }}"
+    creates: "{{ psptoolchain_tmp_path }}/insight-{{ psptoolchain_insight_version }}/build-{{ target }}/gdb/insight"
   with_items:
     - make -j {{ ansible_processor_vcpus }} clean
     - make -j {{ ansible_processor_vcpus }}
 
 - name: Install insight-{{ psptoolchain_insight_version }}
   sudo: yes
-  shell: chdir={{ psptoolchain_tmp_path }}/insight-{{ psptoolchain_insight_version }}/build-{{ target }} make -j {{ ansible_processor_vcpus }} install
-
-- name: Clean insight-{{ psptoolchain_insight_version }}
-  file: path={{ psptoolchain_tmp_path }}/insight-{{ psptoolchain_insight_version }} state=absent
+  shell: make -j {{ ansible_processor_vcpus }} install
+  args:
+    chdir: "{{ psptoolchain_tmp_path }}/insight-{{ psptoolchain_insight_version }}/build-{{ target }}"
+    creates: "{{ install_dir }}/bin/psp-insight"

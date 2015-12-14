@@ -1,16 +1,3 @@
-- name: Cleanup source directories
-  file: path="{{ psptoolchain_tmp_path }}/{{ item }}*" state=absent
-  with_items: 
-    - binutils-{{ psptoolchain_binutils_version }}
-    - gcc-{{ psptoolchain_gcc_version }}
-    - gmp-{{ psptoolchain_gmp_version }}
-    - mpc-{{ psptoolchain_mpc_version }}
-    - mpfr-{{ psptoolchain_mpfr_version }}
-    - newlib-{{ psptoolchain_newlib_version }}
-    - gbd-{{ psptoolchain_gdb_version }}
-    - insight-{{ psptoolchain_insight_version }}
-    - pspsdk
-
 - stat: path=/etc/profile.d/
   register: st
 
@@ -19,4 +6,6 @@
 
 - name: Update environment paths of your systems login scripts!
   sudo: yes
-  template: src=psptoolchain.sh dest=/etc/profile.d/psptoolchain.sh
+  template:
+    src: psptoolchain.sh
+    dest: /etc/profile.d/psptoolchain.sh

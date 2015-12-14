@@ -1,43 +1,54 @@
 - name: Download gdb-{{ psptoolchain_gdb_version }}
   get_url:
-    url=ftp://ftp.gnu.org/pub/gnu/gdb/gdb-{{ psptoolchain_gdb_version }}.tar.bz2
-    dest={{ psptoolchain_tmp_path }}/
+    url: ftp://ftp.gnu.org/pub/gnu/gdb/gdb-{{ psptoolchain_gdb_version }}.tar.bz2
+    dest: "{{ psptoolchain_tmp_path }}"
+    sha256sum: 6d7bff716fde98d03866a1b747c0929ee7dba49bca13e01d975e0b0fa9b33a28
 
 - name: Extract gdb-{{ psptoolchain_gdb_version }}
   unarchive:
-    src={{ psptoolchain_tmp_path }}/gdb-{{ psptoolchain_gdb_version }}.tar.bz2
-    dest={{ psptoolchain_tmp_path }}
-    copy=no
+    src: "{{ psptoolchain_tmp_path }}/gdb-{{ psptoolchain_gdb_version }}.tar.bz2"
+    dest: "{{ psptoolchain_tmp_path }}"
+    copy: no
+    creates: "{{ psptoolchain_tmp_path }}/gdb-{{ psptoolchain_gdb_version }}/Makefile.in"
 
 - name: Apply gdb-{{ psptoolchain_gdb_version }}-fix-stpcpy patch
   patch:
-    src=gdb-{{ psptoolchain_gdb_version }}-fix-stpcpy.patch
-    basedir={{ psptoolchain_tmp_path }}/gdb-{{ psptoolchain_gdb_version }}
-    strip=1
+    src: gdb-{{ psptoolchain_gdb_version }}-fix-stpcpy.patch
+    basedir: "{{ psptoolchain_tmp_path }}/gdb-{{ psptoolchain_gdb_version }}"
+    strip: 1
+  failed_when: False
 
 - name: Apply gdb-{{ psptoolchain_gdb_version }}-PSP patch
   patch:
-    src=gdb-{{ psptoolchain_gdb_version }}-PSP.patch
-    basedir={{ psptoolchain_tmp_path }}/gdb-{{ psptoolchain_gdb_version }}
-    strip=1
+    src: gdb-{{ psptoolchain_gdb_version }}-PSP.patch
+    basedir: "{{ psptoolchain_tmp_path }}/gdb-{{ psptoolchain_gdb_version }}"
+    strip: 1
+  failed_when: False
 
 - name: Apply gdb-{{ psptoolchain_gdb_version }}-texinfofix patch
   patch:
-    src=gdb-{{ psptoolchain_gdb_version }}-texinfofix.patch
-    basedir={{ psptoolchain_tmp_path }}/gdb-{{ psptoolchain_gdb_version }}
-    strip=1
+    src: gdb-{{ psptoolchain_gdb_version }}-texinfofix.patch
+    basedir: "{{ psptoolchain_tmp_path }}/gdb-{{ psptoolchain_gdb_version }}"
+    strip: 1
+  failed_when: False
 
 - name: Apply gdb-{{ psptoolchain_gdb_version }}-fix-sim-arange patch
   patch:
-    src=gdb-{{ psptoolchain_gdb_version }}-fix-sim-arange.patch
-    basedir={{ psptoolchain_tmp_path }}/gdb-{{ psptoolchain_gdb_version }}
-    strip=1
+    src: gdb-{{ psptoolchain_gdb_version }}-fix-sim-arange.patch
+    basedir: "{{ psptoolchain_tmp_path }}/gdb-{{ psptoolchain_gdb_version }}"
+    strip: 1
+  failed_when: False
 
 - name: Create build directory
-  file: path={{ psptoolchain_tmp_path }}/gdb-{{ psptoolchain_gdb_version }}/build-{{ target }} state=directory
+  file:
+    path: "{{ psptoolchain_tmp_path }}/gdb-{{ psptoolchain_gdb_version }}/build-{{ target }}"
+    state: directory
 
 - name: Configure gdb-{{ psptoolchain_gdb_version }}
   shell: chdir={{ psptoolchain_tmp_path }}/gdb-{{ psptoolchain_gdb_version }}/build-{{ target }} ../configure --prefix="{{ install_dir }}" --target="{{ target }}" --disable-werror --disable-nls
+  args:
+    chdir: "{{ psptoolchain_tmp_path }}/gdb-{{ psptoolchain_gdb_version }}/build-{{ target }}"
+    creates: "{{ psptoolchain_tmp_path }}/gdb-{{ psptoolchain_gdb_version }}/build-{{ target }}/Makefile"
   environment:
     PATH: "{{ ansible_env.PATH }}:{{ install_dir }}/bin"
     CFLAGS: -I/opt/local/include
@@ -45,7 +56,10 @@
     LDFLAGS: -L/opt/local/lib 
 
 - name: Compile gdb-{{ psptoolchain_gdb_version }}
-  shell: chdir={{ psptoolchain_tmp_path }}/gdb-{{ psptoolchain_gdb_version }}/build-{{ target }} {{ item }}
+  shell: "{{ item }}"
+  args:
+    chdir: "{{ psptoolchain_tmp_path }}/gdb-{{ psptoolchain_gdb_version }}/build-{{ target }}"
+    creates: "{{ psptoolchain_tmp_path }}/gdb-{{ psptoolchain_gdb_version }}/build-{{ target }}/gdb/libgdb.a"
   with_items:
     - make -j {{ ansible_processor_vcpus }} clean
     - make -j {{ ansible_processor_vcpus }}
@@ -54,9 +68,9 @@
 
 - name: Install gdb-{{ psptoolchain_gdb_version }}
   sudo: yes
-  shell: chdir={{ psptoolchain_tmp_path }}/gdb-{{ psptoolchain_gdb_version }}/build-{{ target }} make -j {{ ansible_processor_vcpus }} install
+  shell: make -j {{ ansible_processor_vcpus }} install
+  args:
+    chdir: "{{ psptoolchain_tmp_path }}/gdb-{{ psptoolchain_gdb_version }}/build-{{ target }}"
+    creates: "{{ install_dir }}/bin/psp-gdb"
   environment:
     PATH: "{{ ansible_env.PATH }}:{{ install_dir }}/bin"
-
-- name: Clean gdb-{{ psptoolchain_gdb_version }}
-  file: path={{ psptoolchain_tmp_path }}/gdb-{{ psptoolchain_gdb_version }} state=absent

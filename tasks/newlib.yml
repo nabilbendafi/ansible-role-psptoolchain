@@ -1,30 +1,41 @@
 - name: Download newlib-{{ psptoolchain_newlib_version }}
   get_url:
-    url=ftp://sources.redhat.com/pub/newlib/newlib-{{ psptoolchain_newlib_version }}.tar.gz
-    dest={{ psptoolchain_tmp_path }}/
+    url: ftp://sources.redhat.com/pub/newlib/newlib-{{ psptoolchain_newlib_version }}.tar.gz
+    dest: "{{ psptoolchain_tmp_path }}"
+    sha256sum: c644b2847244278c57bec2ddda69d8fab5a7c767f3b9af69aa7aa3da823ff692
 
 - name: Extract newlib-{{ psptoolchain_newlib_version }}
   unarchive:
-    src={{ psptoolchain_tmp_path }}/newlib-{{ psptoolchain_newlib_version }}.tar.gz
-    dest={{ psptoolchain_tmp_path }}
-    copy=no
+    src: "{{ psptoolchain_tmp_path }}/newlib-{{ psptoolchain_newlib_version }}.tar.gz"
+    dest: "{{ psptoolchain_tmp_path }}"
+    copy: no
+    creates: "{{ psptoolchain_tmp_path }}/newlib-{{ psptoolchain_newlib_version }}/Makefile.in"
 
 - name: Apply newlib-{{ psptoolchain_newlib_version }}-PSP patch
   patch:
-    src=newlib-{{ psptoolchain_newlib_version }}-PSP.patch
-    basedir={{ psptoolchain_tmp_path }}/newlib-{{ psptoolchain_newlib_version }}
-    strip=1
+    src: newlib-{{ psptoolchain_newlib_version }}-PSP.patch
+    basedir: "{{ psptoolchain_tmp_path }}/newlib-{{ psptoolchain_newlib_version }}"
+    strip: 1
+  failed_when: False
 
 - name: Create build directory
-  file: path={{ psptoolchain_tmp_path }}/newlib-{{ psptoolchain_newlib_version }}/build-{{ target }} state=directory
+  file:
+    path: "{{ psptoolchain_tmp_path }}/newlib-{{ psptoolchain_newlib_version }}/build-{{ target }}"
+    state: directory
 
 - name: Configure newlib-{{ psptoolchain_newlib_version }}
-  shell: chdir={{ psptoolchain_tmp_path }}/newlib-{{ psptoolchain_newlib_version }}/build-{{ target }} ../configure --prefix="{{ install_dir }}" --target="{{ target }}" --enable-newlib-iconv --enable-newlib-multithread --enable-newlib-mb
+  shell: ../configure --prefix="{{ install_dir }}" --target="{{ target }}" --enable-newlib-iconv --enable-newlib-multithread --enable-newlib-mb
+  args:
+    chdir: "{{ psptoolchain_tmp_path }}/newlib-{{ psptoolchain_newlib_version }}/build-{{ target }}"
+    creates: "{{ psptoolchain_tmp_path }}/newlib-{{ psptoolchain_newlib_version }}/build-{{ target }}/Makefile"
   environment:
     PATH: "{{ ansible_env.PATH }}:{{ install_dir }}/bin"
 
 - name: Compile newlib-{{ psptoolchain_newlib_version }}
-  shell: chdir={{ psptoolchain_tmp_path }}/newlib-{{ psptoolchain_newlib_version }}/build-{{ target }} {{ item }}
+  shell: "{{ item }}"
+  args:
+    chdir: "{{ psptoolchain_tmp_path }}/newlib-{{ psptoolchain_newlib_version }}/build-{{ target }}"
+    creates: "{{ psptoolchain_tmp_path }}/newlib-{{ psptoolchain_newlib_version }}/build-{{ target }}/psp/newlib/libc.a"
   with_items:
     - make -j {{ ansible_processor_vcpus }} clean
     - make -j {{ ansible_processor_vcpus }}
@@ -33,9 +44,9 @@
 
 - name: Install newlib-{{ psptoolchain_newlib_version }}
   sudo: yes
-  shell: chdir={{ psptoolchain_tmp_path }}/newlib-{{ psptoolchain_newlib_version }}/build-{{ target }} make -j {{ ansible_processor_vcpus }} install
+  shell: make -j {{ ansible_processor_vcpus }} install
+  args:
+    chdir: "{{ psptoolchain_tmp_path }}/newlib-{{ psptoolchain_newlib_version }}/build-{{ target }}"
+    creates: "{{ install_dir }}/psp/lib/libc.a"
   environment:
     PATH: "{{ ansible_env.PATH }}:{{ install_dir }}/bin"
-
-- name: Clean newlib-{{ psptoolchain_newlib_version }}
-  file: path={{ psptoolchain_tmp_path }}/newlib-{{ psptoolchain_newlib_version }} state=absent
