@@ -9,7 +9,7 @@ Installation
 ------------
 
 ```
-$ ansible-galaxy install nabilbendafi.ansible-role-psptoolchain 
+$ ansible-galaxy install nabilbendafi.psptoolchain
 ```
 
 ```
