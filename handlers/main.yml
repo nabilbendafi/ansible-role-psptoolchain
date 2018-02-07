@@ -1,2 +1,44 @@
----
-# handlers file for psptoolchain
+- name: Clean gcc-{{ psptoolchain_gcc_version }} for C
+  file:
+    path: "{ psptoolchain_tmp_path }}/gcc-{{ psptoolchain_gcc_version }}"
+    state: absent
+
+- name: Clean gcc-{{ psptoolchain_gcc_version }} for C++
+  file:
+    path: "{ psptoolchain_tmp_path }}/gcc-{{ psptoolchain_gcc_version }}"
+    state: absent
+
+- name: Clean binutils-{{ psptoolchain_binutils_version }}
+  file:
+    path: "{ psptoolchain_tmp_path }}/binutils-{{ psptoolchain_binutils_version }}"
+    state: absent
+
+- name: Clean newlib-{{ psptoolchain_newlib_version }}
+  file:
+    path: "{ psptoolchain_tmp_path }}/newlib-{{ psptoolchain_newlib_version }}"
+    state: absent
+
+- name: Clean gdb-{{ psptoolchain_gdb_version }}
+  file:
+    path: "{ psptoolchain_tmp_path }}/gdb-{{ psptoolchain_gdb_version }}"
+    state: absent
+
+- name: Clean insight-{{ psptoolchain_insight_version }}
+  file:
+    path: "{ psptoolchain_tmp_path }}/insight-{{ psptoolchain_insight_version }}"
+    state: absent
+
+- name: Clean PSP SDK
+  file:
+    path: "{ psptoolchain_tmp_path }}/pspsdk"
+    state: absent
+
+- name: Clean PSP linkusb
+  file:
+    path: "{ psptoolchain_tmp_path }}/psplinkusb"
+    state: absent
+
+- name: Clean PSP eboot signer
+  file:
+    path: "{{ psptoolchain_tmp_path }}/ebootsigner"
+    state: absent
